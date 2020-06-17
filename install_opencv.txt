@@ -6,7 +6,18 @@ sudo apt-get install vim
 
 * sourcelist modify
 
+cd /etc/apt
+ls
+cp sources.list sources.list.back
+sudo vim sources.list
+
+아래와 같이 url 수정
 deb http://ftp.kaist.ac.kr/raspbian/raspbian/ buster main contrib non-free rpi
+
+저장 후에 업데이트
+
+sudo apt-get update
+
 
 * 필요한 패키지 설치
 
