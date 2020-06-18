@@ -5,6 +5,6 @@
 opencv 4.1.2
 
 
-추천:
+추천 예제:
 
 https://github.com/subhamroy021/Facial-Recognition.git
