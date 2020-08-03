@@ -1,0 +1,41 @@
+curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add - distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+
+
+fine_tune_checkpoint: "/tf_ssd/pretrained/coco_test/model.ckpt-10000"   
+from_detection_checkpoint: true 
+
+
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+
+curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add - 
+
+curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list 
+
+sudo apt-get update && 
+
+sudo apt-get install -y nvidia-container-toolkit
+sudo systemctl restart docker
+sudo systemctl status docker
+
+docker run --gpus all nvidia/cuda:10.0-base nvidia-smi
+
+
+
+tensorboard --logdir=/tf_ssd/save_models/coco_test
+
+sudo apt-get install nvidia-docker2
+
+sudo NV_GPU=0 nvidia-docker run --name TFTRT0 -it -d --net=host -v "/tf_ssd/share:/ssd_ws" nvcr.io/nvidia/tensorrt:19.01-py3
+
+sudo docker exec -it TFTRT0 /bin/bash
+
+convert-to-uff --input-file /ssd_ws/frozen_inference_graph.pb -O NMS -p /ssd_ws/convert/config.py
+
+cp /ssd_ws/frozen_inference_graph.uff /workspace/tensorrt/data/ssd
+
+mv frozen_inference_graph.uff sample_ssd_relu_car.uff
+
+convert-to-uff --input-file /ssd_ws/frozen_inference_2019.pb -O NMS -p /ssd_ws/convert/config.py
+
+
+
